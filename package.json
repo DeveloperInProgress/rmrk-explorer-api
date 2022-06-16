@@ -1,0 +1,24 @@
+{
+  "name": "rmrk-explorer-api",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DeveloperInProgress/rmrk-explorer-api.git"
+  },
+  "keywords": [],
+  "type": "module",
+  "author": "Naveen Veluswamy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DeveloperInProgress/rmrk-explorer-api/issues"
+  },
+  "homepage": "https://github.com/DeveloperInProgress/rmrk-explorer-api#readme",
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
+}

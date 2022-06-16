@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "declaration": true,
+        "importHelpers": true,
+        "moduleResolution": "node",
+        "module": "es2022",
+        "outDir": "dist",
+        "rootDir": "src",
+        "target": "es2017",
+      },
+}
