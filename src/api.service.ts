@@ -1,10 +1,11 @@
 import * as http from 'http';
 import * as https from 'https';
 import axios, {AxiosInstance} from 'axios';
+import { NFTCollection, NFTEntity } from './types';
 
 export class RmrkSqApiService {
     connection: AxiosInstance;
-    height: bigint;
+    date: Date;
     constructor(
         endpoint: string
     ) {
@@ -21,10 +22,10 @@ export class RmrkSqApiService {
         })
     }
 
-    async getLatestBlockForNftId(id: string) {
+    async getLatestBlockForNftId(id: string): Promise<bigint> {
         const query = `
         query {
-            nftEntities(last: 1, filter: {id: {equalTo: "${id}"}, blockNumber: {lessThan: "${this.height}"}}) {
+            nftEntities(last: 1, filter: {id: {equalTo: "${id}"}, timestampUpdatedAt: {lessThan: "${this.date.toDateString()}"}}) {
                 id
                 blockNumber
             }
@@ -39,13 +40,13 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.nftEntities.nodes[0].blockNumber
+        return data.data.nftEntities.nodes[0].blockNumber as bigint;
     }
 
-    async getLatestBlockForNftName(name: string) {
+    async getLatestBlockForNftName(name: string): Promise<bigint> {
         const query = `
         query {
-            nftEntities(last: 1, filter: {id: {equalTo: "${name}"}, blockNumber: {lessThan: "${this.height}"}}) {
+            nftEntities(last: 1, filter: {id: {equalTo: "${name}"}, timestampUpdatedAt: {lessThan: "${this.date.toDateString()}"}}) {
                 id
                 blockNumber
             }
@@ -60,13 +61,13 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.nftEntities.nodes[0].blockNumber
+        return data.data.nftEntities.nodes[0].blockNumber as bigint;
     }
 
-    async getLatestBlockForNftOwner(owner: string) {
+    async getLatestBlockForNftOwner(owner: string): Promise<bigint> {
         const query = `
         query {
-            nftEntities(last: 1, filter: {id: {equalTo: "${owner}"}, blockNumber: {lessThan: "${this.height}"}}) {
+            nftEntities(last: 1, filter: {id: {equalTo: "${owner}"}, timestampUpdatedAt: {lessThan: "${this.date.toDateString()}"}}) {
                 id
                 blockNumber
             }
@@ -81,35 +82,13 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.nftEntities.nodes[0].blockNumber
+        return data.data.nftEntities.nodes[0].blockNumber as bigint;
     }
 
-    async getLatestBlockForColId(id: string) {
+    async getLatestBlockForColId(id: string): Promise<bigint> {
         const query = `
         query {
-            collectionEntities(last: 1, filter: {id: {equalTo: "${id}"}, blockNumber: {lessThan: "${this.height}"}} ) {
-                id
-                blockNumber
-            }
-        }
-        `
-
-        const {data} = await this.connection.get(
-            '/',
-            {
-                params: {
-                    query: query
-                }
-            }
-        )
-
-        return data.data.collectionEntities.nodes[0].blockNumber
-    }
-
-    async getLatestBlockForColName(name: string) {
-        const query = `
-        query {
-            collectionEntities(last: 1, filter: {id: {equalTo: "${name}"}, blockNumber: {lessThan: "${this.height}"}} ) {
+            collectionEntities(last: 1, filter: {id: {equalTo: "${id}"}, timestampUpdatedAt: {lessThan: "${this.date.toDateString()}"}} ) {
                 id
                 blockNumber
             }
@@ -125,13 +104,13 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.collectionEntities.nodes[0].blockNumber
+        return data.data.collectionEntities.nodes[0].blockNumber as bigint;
     }
 
-    async getLatestBlockForColOwner(owner: string) {
+    async getLatestBlockForColName(name: string): Promise<bigint> {
         const query = `
         query {
-            collectionEntities(last: 1, filter: {id: {equalTo: "${owner}"}, blockNumber: {lessThan: "${this.height}"}} ) {
+            collectionEntities(last: 1, filter: {id: {equalTo: "${name}"}, timestampUpdatedAt: {lessThan: "${this.date.toDateString()}"}} ) {
                 id
                 blockNumber
             }
@@ -147,10 +126,32 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.collectionEntities.nodes[0].blockNumber
+        return data.data.collectionEntities.nodes[0].blockNumber as bigint
     }
 
-    async nftById(id: string) {
+    async getLatestBlockForColOwner(owner: string): Promise<bigint> {
+        const query = `
+        query {
+            collectionEntities(last: 1, filter: {id: {equalTo: "${owner}"}, timestampUpdatedAt: {lessThan: "${this.date.toDateString()}"}} ) {
+                id
+                blockNumber
+            }
+        }
+        `
+
+        const {data} = await this.connection.get(
+            '/',
+            {
+                params: {
+                    query: query
+                }
+            }
+        )
+
+        return data.data.collectionEntities.nodes[0].blockNumber as bigint;
+    }
+
+    async nftById(id: string): Promise<NFTEntity> {
         const block = await this.getLatestBlockForNftId(id)
         const query = `
         query {
@@ -189,10 +190,10 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.nftEntities.nodes[0];
+        return data.data.nftEntities.nodes[0] as NFTEntity;
     }
 
-    async nftByName(name: string) {
+    async nftByName(name: string): Promise<NFTEntity[]> {
         const block = await this.getLatestBlockForNftName(name)
         const query = `
         query {
@@ -232,10 +233,10 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.nftEntities.nodes;
+        return data.data.nftEntities.nodes as NFTEntity[];
     }
 
-    async nftsByOwner(owner: string) {
+    async nftsByOwner(owner: string): Promise<NFTEntity[]> {
         const block = await this.getLatestBlockForNftOwner(owner)
         const query = `
         query {
@@ -275,10 +276,10 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.nftEntities.nodes;
+        return data.data.nftEntities.nodes as NFTEntity[];
     }
 
-    async collectionById(id: string) {
+    async collectionById(id: string): Promise<NFTCollection> {
         const block = await this.getLatestBlockForColId(id)
         const query = `
         query {
@@ -317,10 +318,10 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.collectionEntities.nodes[0];
+        return data.data.collectionEntities.nodes[0] as NFTCollection;
     }
 
-    async collectionByName(name: string) {
+    async collectionByName(name: string): Promise<NFTCollection> {
         const block = await this.getLatestBlockForColName(name)
         const query = `
         query {
@@ -359,10 +360,10 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.collectionEntities.nodes[0];
+        return data.data.collectionEntities.nodes[0] as NFTCollection;
     }
 
-    async collectionByOwner(owner: string) {
+    async collectionByOwner(owner: string): Promise<NFTCollection[]> {
         const block = await this.getLatestBlockForColOwner(owner)
         const query = `
         query {
@@ -401,6 +402,19 @@ export class RmrkSqApiService {
             }
         )
 
-        return data.data.collectionEntities.nodes;
+        return data.data.collectionEntities.nodes as NFTCollection[];
+    }
+
+    async customQuery(query: string): Promise<any> {
+        const {data} = await this.connection.get(
+            '/',
+            {
+                params: {
+                    query: query
+                }
+            }
+        ) 
+
+        return data.data;
     }
 }
