@@ -14,30 +14,30 @@ export class NftEntityService {
     async salesCount(nft: NFTEntity) {
         const query = `
         query {
-            nftEntities(filter: {id: {equalTo: "${nft.id}"}, timestampUpdatedAt: {lessThan: "${this.api.date.toDateString()}"}}) {
+            nFTEntities(blockHeight: "${this.api.blockHeight}", filter: {id: {equalTo: "${nft.id}"}}) {
                 nodes {
-                    currentOwner
+                    owners
                 }
             }
         }
         `
-        const data = this.api.customQuery(query);
-        const ownersList = (data as any).nftEntities.nodes.map((node) => node.currentOwner);
+        const data = await this.api.customQuery(query);
+        const ownersList = (data as any).nFTEntities.nodes[0].owners;
         return numberOfSales(ownersList);
     }
 
     async uniqueOwnersOverTime(nft: NFTEntity) {
         const query = `
         query {
-            nftEntities(filter: {id: {equalTo: "${nft.id}"}, blockNumber: {lessThan: "${this.api.date.toDateString()}"}}) {
+            nFTEntities(blockHeight: "${this.api.blockHeight}", filter: {id: {equalTo: "${nft.id}"}}) {
                 nodes {
-                    currentOwner
+                    owners
                 }
             }
         }
         `
-        const data = this.api.customQuery(query);
-        const ownersList = (data as any).nftEntities.nodes.map((node) => node.currentOwner);
+        const data = await this.api.customQuery(query);
+        const ownersList = (data as any).nFTEntities.nodes[0].owners;
         return new Set(ownersList).size;
     }
 }

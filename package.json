@@ -2,6 +2,7 @@
   "name": "rmrk-explorer-api",
   "version": "1.0.0",
   "description": "",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b"
@@ -19,6 +20,10 @@
   },
   "homepage": "https://github.com/DeveloperInProgress/rmrk-explorer-api#readme",
   "dependencies": {
-    "axios": "^0.27.2"
+    "@types/node": "^18.0.0",
+    "axios": "^0.27.2",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
+    "typescript": "^4.7.4"
   }
 }
